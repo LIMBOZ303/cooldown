@@ -1,363 +1,728 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Countdown Timer</title>
+  <title>Đếm Ngược Tết</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Dancing+Script:wght@700&family=Pacifico&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    :root {
+      --primary-color: #e60000;
+      --secondary-color: #ffd700;
+      --accent-color: #ff9e00;
+      --text-color: #ffffff;
+      --dark-bg: rgba(0, 0, 0, 0.75);
+      --light-bg: rgba(255, 255, 255, 0.15);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
     body {
       position: relative;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       margin: 0;
-      background-image: url('https://img.pikbest.com/backgrounds/20220119/new-year-27s-eve-lantern-red-simple-spring-festival-background_6247306.jpg!bwr800'); 
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      color: white;
-      font-family: 'Arial', sans-serif;
+      background-color: #000;
+      color: var(--text-color);
+      font-family: 'Montserrat', sans-serif;
       text-align: center;
+      overflow-x: hidden;
+    }
+    
+    /* Background với hiệu ứng parallax */
+    .background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
       overflow: hidden;
     }
-
-    .container {
-      background-color: rgba(0, 0, 0, 0.7); 
-      padding: 40px 40px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-      position: relative;
-      z-index: 1;
-      max-width: 80%; 
-    }
-
-    .timer-text {
-      font-size: 48px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      background: linear-gradient(45deg, #ff9e00, #ff0066);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      animation: fadeIn 1.5s ease-out, stretchText 2s ease-in-out infinite;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
-    }
-
-    @keyframes fadeIn {
-      0% { opacity: 0; }
-      100% { opacity: 1; }
-    }
-
-    @keyframes stretchText {
-      0%, 100% { letter-spacing: 2px; }
-      50% { letter-spacing: 5px; }
-    }
-
-    .time-left {
-      font-size: 50px;
-      font-weight: bold;
-      color: #ffeb3b;
-      margin: 20px 0;
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.1); opacity: 0.8; }
-      100% { transform: scale(1); opacity: 1; }
-    }
-
-    .message {
-      font-size: 60px; 
-      font-weight: bold;
-      color: #FFD700; 
-      margin-top: 20px;
-      display: none;
-      animation: fadeIn 2s ease-out, glow 1.5s ease-in-out infinite; 
-      text-shadow: 0 0 20px rgba(255, 223, 0, 0.7), 0 0 30px rgba(255, 223, 0, 0.5); 
-      letter-spacing: 5px; 
-      text-transform: uppercase; 
-      font-family: 'Roboto', sans-serif; 
-    }
-
-    @keyframes glow {
-      0% { text-shadow: 0 0 20px rgba(255, 223, 0, 0.7), 0 0 30px rgba(255, 223, 0, 0.5); }
-      50% { text-shadow: 0 0 30px rgba(255, 223, 0, 1), 0 0 60px rgba(255, 223, 0, 0.8); }
-      100% { text-shadow: 0 0 20px rgba(255, 223, 0, 0.7), 0 0 30px rgba(255, 223, 0, 0.5); }
-    }
-
-    .timer-box {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 20px;
-      flex-wrap: wrap; 
-    }
-
-    .time-unit {
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 20px 30px;
-      border-radius: 10px;
-      font-size: 40px;
-      font-weight: bold;
-      color: #ffeb3b;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-      position: relative;
-      width: 90px;
-    }
-
-    .time-unit span {
-      display: block;
-      font-size: 18px;
-      color: #ffffff;
-      margin-top: 5px;
-    }
-
-    .timer-box .time-unit:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-      cursor: pointer;
-      transform: scale(1.1);
-      transition: 0.3s ease;
-    }
-
-    .background-particles {
+    
+    .background-image {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: url('https://img.pikbest.com/backgrounds/20220119/new-year-27s-eve-lantern-red-simple-spring-festival-background_6247306.jpg!bwr800') no-repeat center center/cover;
-      z-index: 1; 
+      background-size: cover;
+      background-position: center;
+      transition: opacity 1.5s ease;
     }
-
-    .credits {
+    
+    .bg-solar {
+      background-image: url('https://img.pikbest.com/backgrounds/20220119/new-year-27s-eve-lantern-red-simple-spring-festival-background_6247306.jpg!bwr800');
+      opacity: 1;
+    }
+    
+    .bg-lunar {
+      background-image: url('https://www.vanskitchen.com/wp-content/uploads/2021/12/CNY-fireworks.jpg');
+      opacity: 0;
+    }
+    
+    /* Hiệu ứng phủ */
+    .overlay {
       position: absolute;
-      bottom: 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      z-index: 3;
-      padding: 10px;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%);
+      z-index: -1;
     }
-
-    .credit-buttons {
-      display: flex;
-      gap: 25px; 
-      justify-content: center;
-      margin-bottom: 10px;
-      flex-wrap: wrap; 
+    
+    /* Hiệu ứng pháo hoa và các phần tử trang trí */
+    .particles-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
     }
-
-    .credit-button {
-      display: inline-block;
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
-      text-decoration: none;
-      padding: 10px 20px;
-      border-radius: 25px;
-      font-size: 16px;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      min-width: 140px; 
-      text-align: center;
-    }
-
-    .credit-button:hover {
-      background: rgba(255, 255, 255, 0.4); 
-      color: #ffd700;
-      transform: translateY(-3px);
-      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
-    }
-
-    .email-note {
-      font-size: 14px;
-      color: #e0e0e0; 
-      text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-    }
-
-    .email-note a {
-      color: #ffd700; 
-      text-decoration: none;
-    }
-
-    .email-note a:hover {
-      text-decoration: underline;
-    }
-
-    #custom-image-container {
+    
+    .particle {
       position: absolute;
-      top: 6%; 
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 3; 
+      border-radius: 50%;
+      animation: float 15s linear infinite;
+      opacity: 0;
     }
-
-    #custom-image {
+    
+    .lantern {
+      position: absolute;
+      width: 40px;
+      height: 60px;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><path d="M40,20 Q50,10 60,20 L60,80 Q50,90 40,80 Z" fill="red" stroke="gold" stroke-width="2"/><path d="M50,10 L50,0" stroke="gold" stroke-width="2"/><path d="M45,85 L55,85" stroke="gold" stroke-width="2"/></svg>');
+      background-size: contain;
+      background-repeat: no-repeat;
+      opacity: 0.8;
+      animation: float-lantern 20s linear infinite;
+    }
+    
+    /* Container chính */
+    .container {
+      background-color: var(--dark-bg);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      position: relative;
+      z-index: 10;
+      max-width: 90%;
+      width: 600px;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+      transform: translateY(0);
+      transition: var(--transition);
+    }
+    
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.3) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transform: skewX(-25deg);
+      animation: shine 3s infinite;
+      z-index: -1;
+    }
+    
+    @keyframes shine {
+      0% { left: -100%; }
+      20% { left: 100%; }
+      100% { left: 100%; }
+    }
+    
+    /* Logo và hình ảnh */
+    .logo-container {
+      position: relative;
+      margin-bottom: 20px;
+      z-index: 10;
+    }
+    
+    .logo-image {
       width: 120px;
       height: 120px;
       border-radius: 50%;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
       object-fit: cover;
+      border: 3px solid var(--accent-color);
+      animation: float-logo 3s ease-in-out infinite;
+      transition: transform 0.3s ease;
     }
-
-    audio {
-      display: none;
-    }
-
-
-    .switch-button {
-  display: inline-block;
-  background: rgba(253, 253, 253, 0.2);
-  color: white;
-  text-decoration: none;
-  padding: 12px 30px;
-  border-radius: 25px;
-  font-size: 18px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease-in-out;
-  min-width: 160px; /* Giống với nút credit */
-  text-align: center;
-  border: none;
-  margin-top: 10px;
-}
-
-.switch-button:hover {
-  background: rgba(255, 255, 255, 0.4);
-  color: #ffd700;
-  transform: translateY(-3px);
-  box-shadow: 0 6px 15px rgba(247, 247, 247, 0.4);
-  transition: all 0.3s ease-in-out;
-}
-
-.switch-button:focus {
-  outline: none;
-}
-
-.switch-button:active {
-  transform: scale(0.98);
-  box-shadow: 0 4px 8px rgba(255, 255, 255, 0.3);
-}
-
     
-
-
-    @media screen and (max-width: 600px) {
-      .container {
-        padding: 20px;
+    .logo-image:hover {
+      transform: scale(1.1);
+    }
+    
+    @keyframes float-logo {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    
+    /* Tiêu đề */
+    .timer-title {
+      font-size: 42px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      background: linear-gradient(45deg, var(--accent-color), var(--secondary-color));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      position: relative;
+      z-index: 2;
+      font-family: 'Dancing Script', cursive;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      transition: var(--transition);
+    }
+    
+    .solar-title::after {
+      content: '2026';
+      position: absolute;
+      font-size: 0.4em;
+      top: 0;
+      right: -15px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      color: var(--secondary-color);
+    }
+    
+    .lunar-title::after {
+      content: '2026';
+      position: absolute;
+      font-size: 0.4em;
+      top: 0;
+      right: -15px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      color: var(--secondary-color);
+    }
+    
+    /* Bộ đếm thời gian */
+    .timer-box {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin: 30px 0;
+      flex-wrap: wrap;
+      perspective: 1000px;
+    }
+    
+    .time-unit {
+      background: linear-gradient(145deg, rgba(30, 30, 30, 0.8), rgba(10, 10, 10, 0.9));
+      padding: 20px 10px;
+      border-radius: 15px;
+      font-size: 36px;
+      font-weight: bold;
+      color: var(--secondary-color);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3),
+                  inset 0 2px 5px rgba(255, 255, 255, 0.1);
+      position: relative;
+      width: 100px;
+      height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .time-unit:hover {
+      transform: translateY(-10px) rotateY(10deg);
+      box-shadow: 0 15px 25px rgba(0, 0, 0, 0.4),
+                  inset 0 2px 5px rgba(255, 255, 255, 0.1);
+    }
+    
+    .time-unit::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+      pointer-events: none;
+    }
+    
+    .time-unit span {
+      display: block;
+      font-size: 14px;
+      color: #ffffff;
+      margin-top: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+    
+    /* Nút chuyển đổi */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .switch-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin: 10px 0;
+    }
+    
+    .switch-label {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+    
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 60px;
+      height: 30px;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.2);
+      transition: .4s;
+      border-radius: 34px;
+    }
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    
+    input:checked + .slider {
+      background-color: var(--accent-color);
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(30px);
+    }
+    
+    .calendar-icon {
+      font-size: 18px;
+      color: var(--secondary-color);
+    }
+    
+    /* Thông báo khi đếm ngược kết thúc */
+    .message {
+      font-size: 50px;
+      font-weight: bold;
+      color: var(--secondary-color);
+      margin: 30px 0;
+      display: none;
+      font-family: 'Pacifico', cursive;
+      text-shadow: 0 0 20px rgba(255, 223, 0, 0.7),
+                  0 0 30px rgba(255, 223, 0, 0.5);
+      animation: celebrate 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes celebrate {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    /* Footer & Credits */
+    .credits {
+      margin-top: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 100;
+    }
+    
+    .social-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+    
+    .social-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--light-bg);
+      color: var(--text-color);
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 50px;
+      font-size: 15px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      -webkit-backdrop-filter: blur(5px);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .social-button:hover {
+      background: rgba(255, 255, 255, 0.3);
+      color: var(--secondary-color);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .social-button i {
+      font-size: 18px;
+    }
+    
+    .email {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 10px;
+    }
+    
+    .email a {
+      color: var(--secondary-color);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+    
+    .email a:hover {
+      text-decoration: underline;
+      color: var(--accent-color);
+    }
+    
+    /* Animations */
+    @keyframes float {
+      0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
       }
-
-      .timer-text {
+      10% {
+        opacity: 0.7;
+      }
+      90% {
+        opacity: 0.7;
+      }
+      100% {
+        transform: translateY(-100vh) translateX(var(--translate-x));
+        opacity: 0;
+      }
+    }
+    
+    @keyframes float-lantern {
+      0% {
+        transform: translateY(100vh) rotate(var(--rotate-start));
+        opacity: 0.8;
+      }
+      10% {
+        opacity: 0.8;
+      }
+      90% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-100px) rotate(var(--rotate-end));
+        opacity: 0;
+      }
+    }
+    
+    /* Media Queries */
+    @media screen and (max-width: 768px) {
+      .container {
+        padding: 30px 20px;
+      }
+      
+      .timer-title {
         font-size: 32px;
       }
-
-      .time-left {
-        font-size: 40px;
+      
+      .timer-box {
+        gap: 10px;
       }
-
+      
       .time-unit {
-        font-size: 30px;
-        width: 70px; 
+        width: 70px;
+        height: 90px;
+        font-size: 28px;
+        padding: 10px 5px;
       }
-
-      .credit-button {
-        font-size: 14px;
-        min-width: 100px;
+      
+      .time-unit span {
+        font-size: 12px;
       }
-
+      
+      .social-buttons {
+        flex-wrap: wrap;
+      }
+    }
+    
+    @media screen and (max-width: 480px) {
+      .container {
+        padding: 20px 15px;
+      }
+      
+      .timer-title {
+        font-size: 28px;
+      }
+      
+      .timer-box {
+        gap: 8px;
+      }
+      
+      .time-unit {
+        width: 60px;
+        height: 80px;
+        font-size: 24px;
+        padding: 8px 5px;
+      }
+      
       .message {
-        font-size: 40px;
+        font-size: 36px;
+      }
+      
+      .logo-image {
+        width: 100px;
+        height: 100px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="background-particles"></div>
-
-  <div id="custom-image-container">
-    <img id="custom-image" src="img.png" alt="Image" />
+  <!-- Background containers -->
+  <div class="background">
+    <div class="background-image bg-solar" id="bgSolar"></div>
+    <div class="background-image bg-lunar" id="bgLunar"></div>
+    <div class="overlay"></div>
   </div>
-
+  
+  <!-- Particles for decoration -->
+  <div class="particles-container" id="particles"></div>
+  
+  <!-- Main content -->
   <div class="container">
-    <div id="timer-text" class="timer-text">Ready for 2026</div>
-    <div class="timer-box" id="time-left"></div>
-    <div id="message" class="message">Chúc mừng năm mới!</div>
-    <button id="switchButton" class="switch-button">Đổi Lịch</button>
-  </div>
-
-  <div class="credits">
-    <div class="credit-buttons">
-      <a href="https://www.facebook.com/van.cuong.710323" target="_blank" rel="noopener noreferrer" class="credit-button">Facebook</a>
-      <a href="https://www.tiktok.com/@illusion1c" target="_blank" rel="noopener noreferrer" class="credit-button">TikTok</a>
+    <div class="logo-container">
+      <img id="logoImage" class="logo-image" src="img.png" alt="Logo" />
     </div>
-    <p class="email-note">Liên hệ: <a href="mailto:nguyencuong.20082009@gmail.com">nguyencuong.20082009@gmail.com</a></p>
+    
+    <h1 id="timerTitle" class="timer-title solar-title">Tết Dương Lịch</h1>
+    
+    <div id="timeLeft" class="timer-box"></div>
+    
+    <div id="message" class="message">Chúc Mừng Năm Mới!</div>
+    
+    <div class="controls">
+      <div class="switch-container">
+        <span class="switch-label"><i class="fas fa-sun calendar-icon"></i> Dương lịch</span>
+        <label class="switch">
+          <input type="checkbox" id="calendarToggle">
+          <span class="slider"></span>
+        </label>
+        <span class="switch-label">Âm lịch <i class="fas fa-moon calendar-icon"></i></span>
+      </div>
+    </div>
+    
+    <div class="credits">
+      <div class="social-buttons">
+        <a href="https://www.facebook.com/van.cuong.710323" target="_blank" rel="noopener noreferrer" class="social-button">
+          <i class="fab fa-facebook-f"></i> Facebook
+        </a>
+        <a href="https://www.tiktok.com/@illusion1c" target="_blank" rel="noopener noreferrer" class="social-button">
+          <i class="fab fa-tiktok"></i> TikTok
+        </a>
+      </div>
+      <p class="email">Liên hệ: <a href="mailto:nguyencuong.20082009@gmail.com">nguyencuong.20082009@gmail.com</a></p>
+    </div>
   </div>
-
+  
+  <!-- Âm thanh -->
   <audio id="music" src="TheFatRat - Xenogenesis (Outro Song).mp3"></audio>
-
+  
   <script>
-    let targetDate = new Date("2025-12-31T24:00:00").getTime(); 
-    let isLunar = false; // Start with Solar (Dương Lịch)
-
-    const targetDateLunar = new Date("2025-02-17T00:00:00").getTime(); // Tết Nguyên Đán
-
-    const timerTextElement = document.getElementById("timer-text");
-    const timeLeftElement = document.getElementById("time-left");
+    // Thiết lập ngày đếm ngược
+    const targetDateSolar = new Date("2026-01-01T00:00:00").getTime(); // Tết Dương lịch 2026
+    const targetDateLunar = new Date("2026-01-29T00:00:00").getTime(); // Tết Âm lịch 2026 (ước tính)
+    
+    // Các phần tử DOM
+    const timerTitleElement = document.getElementById("timerTitle");
+    const timeLeftElement = document.getElementById("timeLeft");
     const messageElement = document.getElementById("message");
+    const calendarToggle = document.getElementById("calendarToggle");
     const music = document.getElementById("music");
-
+    const bgSolar = document.getElementById("bgSolar");
+    const bgLunar = document.getElementById("bgLunar");
+    const particlesContainer = document.getElementById("particles");
+    
+    // Biến theo dõi trạng thái
+    let isLunar = false;
+    let targetDate = targetDateSolar;
     let musicPlayed = false;
-
-    document.getElementById('switchButton').addEventListener('click', () => {
-      isLunar = !isLunar;
-      targetDate = isLunar ? targetDateLunar : new Date("2025-12-31T24:00:00").getTime(); 
-      timerTextElement.textContent = isLunar ? 'Tết Nguyên Đán' : 'Tết Dương Lịch';
-      updateTimer();
-    });
-
+    let timerInterval;
+    
+    // Tạo phần tử trang trí
+    function createDecorations() {
+      // Xóa tất cả phần tử hiện có
+      particlesContainer.innerHTML = '';
+      
+      if (isLunar) {
+        // Tạo đèn lồng cho Tết Âm lịch
+        for (let i = 0; i < 10; i++) {
+          const lantern = document.createElement('div');
+          lantern.classList.add('lantern');
+          lantern.style.setProperty('--translate-x', `${Math.random() * 100 - 50}px`);
+          lantern.style.setProperty('--rotate-start', `${Math.random() * 20 - 10}deg`);
+          lantern.style.setProperty('--rotate-end', `${Math.random() * 20 - 10}deg`);
+          lantern.style.left = `${Math.random() * 100}%`;
+          lantern.style.animationDuration = `${Math.random() * 15 + 25}s`;
+          lantern.style.animationDelay = `${Math.random() * 10}s`;
+          particlesContainer.appendChild(lantern);
+        }
+      } else {
+        // Tạo các hạt cho Tết Dương lịch
+        for (let i = 0; i < 50; i++) {
+          const particle = document.createElement('div');
+          particle.classList.add('particle');
+          particle.style.width = `${Math.random() * 15 + 5}px`;
+          particle.style.height = `${Math.random() * 15 + 5}px`;
+          particle.style.background = `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.8)`;
+          particle.style.setProperty('--translate-x', `${Math.random() * 200 - 100}px`);
+          particle.style.left = `${Math.random() * 100}%`;
+          particle.style.top = `${Math.random() * 100 + 100}%`;
+          particle.style.animationDuration = `${Math.random() * 10 + 10}s`;
+          particle.style.animationDelay = `${Math.random() * 5}s`;
+          particlesContainer.appendChild(particle);
+        }
+      }
+    }
+    
+    // Cập nhật bộ đếm thời gian
     function updateTimer() {
       const now = new Date().getTime();
       const difference = targetDate - now;
-
+      
+      // Phát nhạc khi đếm ngược gần kết thúc
       if (difference <= 2000 && !musicPlayed) {
-        music.play(); 
+        music.play();
         musicPlayed = true;
       }
-
+      
+      // Hiển thị thông báo khi đếm ngược kết thúc
       if (difference <= 0) {
         clearInterval(timerInterval);
         timeLeftElement.style.display = "none";
-        timerTextElement.textContent = ""; 
-        messageElement.style.display = "block"; 
+        messageElement.style.display = "block";
         return;
       }
-
-      const totalSeconds = Math.floor(difference / 1000);
-      const seconds = totalSeconds % 60;
-      const totalMinutes = Math.floor(totalSeconds / 60);
-      const minutes = totalMinutes % 60;
-      const hours = Math.floor(totalMinutes / 60) % 24;
-      const days = Math.floor(totalMinutes / 60 / 24);
       
+      // Tính toán thời gian còn lại
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+      
+      // Cập nhật giao diện
       timeLeftElement.innerHTML = `
-        <div class="time-unit">${days}<span>Days</span></div>
-        <div class="time-unit">${hours}<span>Hours</span></div>
-        <div class="time-unit">${minutes}<span>Minutes</span></div>
-        <div class="time-unit">${seconds}<span>Seconds</span></div>
+        <div class="time-unit">${days}<span>Ngày</span></div>
+        <div class="time-unit">${hours}<span>Giờ</span></div>
+        <div class="time-unit">${minutes}<span>Phút</span></div>
+        <div class="time-unit">${seconds}<span>Giây</span></div>
       `;
     }
-
-    const timerInterval = setInterval(updateTimer, 1000);
+    
+    // Chuyển đổi giữa lịch dương và lịch âm
+    function toggleCalendar() {
+      isLunar = calendarToggle.checked;
+      targetDate = isLunar ? targetDateLunar : targetDateSolar;
+      
+      // Cập nhật tiêu đề
+      if (isLunar) {
+        timerTitleElement.textContent = "Tết Nguyên Đán";
+        timerTitleElement.classList.remove("solar-title");
+        timerTitleElement.classList.add("lunar-title");
+        bgSolar.style.opacity = "0";
+        bgLunar.style.opacity = "1";
+      } else {
+        timerTitleElement.textContent = "Tết Dương Lịch";
+        timerTitleElement.classList.remove("lunar-title");
+        timerTitleElement.classList.add("solar-title");
+        bgSolar.style.opacity = "1";
+        bgLunar.style.opacity = "0";
+      }
+      
+      // Cập nhật phần tử trang trí
+      createDecorations();
+      
+      // Cập nhật đếm ngược
+      updateTimer();
+      
+      // Reset thông báo
+      messageElement.style.display = "none";
+      timeLeftElement.style.display = "flex";
+      
+      // Reset trạng thái phát nhạc
+      musicPlayed = false;
+      music.pause();
+      music.currentTime = 0;
+    }
+    
+    // Bắt sự kiện chuyển đổi lịch
+    calendarToggle.addEventListener("change", toggleCalendar);
+    
+    // Khởi tạo phần tử trang trí
+    createDecorations();
+    
+    // Khởi động bộ đếm
+    timerInterval = setInterval(updateTimer, 1000);
     updateTimer();
+    
+    // Animation cho nút chuyển đổi khi trang tải xong
+    document.addEventListener("DOMContentLoaded", function() {
+      document.querySelector(".container").style.transform = "translateY(0)";
+    });
   </script>
 </body>
 </html>
